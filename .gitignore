@@ -1,0 +1,8 @@
+# Ignore Firebase JSON keys
+*.json
+!index.html  # Allow index.html (negates previous rule)
+
+# Ignore system files
+__pycache__/
+*.pyc
+.DS_Store

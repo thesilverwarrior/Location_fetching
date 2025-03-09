@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live GPS Tracker</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        #map { height: 500px; width: 100%; }
+        #alert { color: red; font-size: 20px; font-weight: bold; display: none; }
+    </style>
+</head>
+<body>
+    <h2>Live GPS Tracker</h2>
+    <p id="alert">⚠️ ALERT: You have moved more than 500 meters!</p>
+    <div id="map"></div>
+
+    <script>
+        var map = L.map('map').setView([20, 78], 5); // Default center (India)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+        var marker = L.marker([20, 78]).addTo(map);
+
+        var socket = io.connect("http://localhost:5000");
+
+        socket.on("update_location", function(data) {
+            console.log("New GPS Data:", data);
+            var lat = data.latitude;
+            var lon = data.longitude;
+            var alert = data.alert;
+
+            marker.setLatLng([lat, lon]);
+            map.setView([lat, lon], 15);
+
+            // Show alert if moved >500m
+            if (alert) {
+                document.getElementById("alert").style.display = "block";
+            } else {
+                document.getElementById("alert").style.display = "none";
+            }
+        });
+    </script>
+</body>
+</html>
+
+
+
